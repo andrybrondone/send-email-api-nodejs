@@ -1,11 +1,11 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
+const cors = require('cors');
 
 require('dotenv').config();
 
-const app = express();
-app.use(bodyParser.json());
+app.use(express.json())
+app.use(cors())
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -35,12 +35,13 @@ const sendEmail = (subject, emailContent, callback) => {
 };
 
 app.post('/api/send-email', (req, res) => {
-  const { email, subject, content } = req.body;
+  const { name, email, subject, content } = req.body;
 
   // Construction du contenu de l'e-mail en HTML
   const emailContent = `
     <div>
-      <h2>${email}</h2>
+      <h1>Nom : ${name}</h1>
+      <h2>Adresse e-mail ${email}</h2>
       <p style="font-size: 17px; max-width: 850px">${content}</p>
     </div>
   `;
@@ -56,4 +57,4 @@ app.post('/api/send-email', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running`));
