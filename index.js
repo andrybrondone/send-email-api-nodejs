@@ -1,4 +1,5 @@
 const express = require('express');
+const app = express();
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 
@@ -40,8 +41,8 @@ app.post('/api/send-email', (req, res) => {
   // Construction du contenu de l'e-mail en HTML
   const emailContent = `
     <div>
-      <h1>Nom : ${name}</h1>
-      <h2>Adresse e-mail ${email}</h2>
+      <h2>Nom : ${name}</h2>
+      <h3>Adresse e-mail ${email}</h3>
       <p style="font-size: 17px; max-width: 850px">${content}</p>
     </div>
   `;
