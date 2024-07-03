@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const nodemailer = require('nodemailer');
 const cors = require('cors');
+const functions = require('firebase-functions')
 
 require('dotenv').config();
 
@@ -59,3 +60,5 @@ app.post('/api/send-email', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running`));
+
+exports.api = functions.https.onRequest(app)
