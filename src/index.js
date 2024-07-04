@@ -36,6 +36,10 @@ const sendEmail = (subject, emailContent, callback) => {
   });
 };
 
+app.get('/', (req, res) => {
+  res.send("OKKKKKK")
+})
+
 app.post('/api/send-email', (req, res) => {
   const { name, email, subject, content } = req.body;
 
