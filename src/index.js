@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const nodemailer = require('nodemailer');
 const cors = require('cors');
-const functions = require('firebase-functions')
+const axios = require('axios');
 
 require('dotenv').config();
 
@@ -40,14 +40,31 @@ app.get('/', (req, res) => {
   res.send("OKKKKKK")
 })
 
-app.post('/api/send-email', (req, res) => {
-  const { name, email, subject, content } = req.body;
+app.post('/api/send-email', async (req, res) => {
+  const { name, email, subject, content, recaptchaToken } = req.body;
+
+  // Vérifiez le token reCAPTCHA
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+  try {
+    const recaptchaResponse = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+      params: {
+        secret: secretKey,
+        response: recaptchaToken,
+      },
+    });
+
+    if (!recaptchaResponse.data.success) {
+      return res.json({ error: "error", message: 'Échec de la vérification reCAPTCHA' });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: "error", message: 'Erreur lors de la vérification reCAPTCHA' });
+  }
 
   // Construction du contenu de l'e-mail en HTML
   const emailContent = `
     <div>
       <h2>Nom : ${name}</h2>
-      <h3>Adresse e-mail ${email}</h3>
+      <h3>Adresse e-mail : ${email}</h3>
       <p style="font-size: 17px; max-width: 850px">${content}</p>
     </div>
   `;
@@ -64,5 +81,3 @@ app.post('/api/send-email', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running`));
-
-exports.api = functions.https.onRequest(app)
